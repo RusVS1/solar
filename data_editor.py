@@ -13,6 +13,8 @@ def edit(file):
     df['DY'] = df['Местное время в Иркутске'].dt.day
     df['HR'] = df['Местное время в Иркутске'].dt.hour
     df = df.drop(columns=['Местное время в Иркутске'])
+    drop_columns = ['P', 'Pa', 'ff10', 'ff3', 'Tn', 'Tx', 'VV', 'Td', 'E', 'Tg', "E'", 'sss']
+    df = df.drop(columns=drop_columns, errors='ignore')
     cols = ['YEAR', 'MO', 'DY', 'HR'] + [col for col in df.columns if col not in ['YEAR', 'MO', 'DY', 'HR']]
     df = df[cols]
 

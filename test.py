@@ -23,35 +23,11 @@ table = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "forecastTable
 rows = table.find_elements(By.TAG_NAME, "tr")
 
 data = []
+fog = []
 
 hours = rows[1].find_elements(By.TAG_NAME, "td") or rows[1].find_elements(By.TAG_NAME, "th")
-hours = [int(hour.text) for hour in hours[1:]]
-
-months_lib = {"января" : 1, "февраля" : 2, "марта" : 3, "апреля" : 4, "мая" : 5, "июня" : 6, 
-          "июля" : 7, "августа" : 8, "сентября" : 9, "октября" : 10, "ноября" : 11, "декабря" : 12,}
-cells = rows[0].find_elements(By.TAG_NAME, "td") or rows[0].find_elements(By.TAG_NAME, "th")
-cells = [txt.text for txt in cells]
-days = []
-months = []
-for cell in cells:
-    date = re.search(r"(\d+)\s+([а-яА-Я]+)", cell)
-    if date:
-        day = int(date.group(1))
-        month = months_lib[date.group(2)]
-        days.append(day)
-        months.append(month)
-day_data = []
-month_data = []
-for i in range(7*4 - len(hours)):
-    day_data.append(days[0])
-    month_data.append(months[0])
-for i in range(1, 7):
-    for j in range(4):
-        day_data.append(days[i])
-        month_data.append(months[i])
-data.append(month_data)
-data.append(day_data)
-data.append(hours)
+hours = [hour.text for hour in hours]
+data.append(hours[1:])
 
 cells = rows[2].find_elements(By.TAG_NAME, "td") or rows[2].find_elements(By.TAG_NAME, "th")
 cloud_cover = []
@@ -90,7 +66,7 @@ for cell in cells:
         pass
 data.append(rainfall[1:])
 
-for i in range(4, 11):
+for i in range(5, 11):
     raw_data = rows[i].find_elements(By.TAG_NAME, "td") or rows[i].find_elements(By.TAG_NAME, "th")
     raw_data = [raw.text for raw in raw_data]
     data.append(raw_data[1:])
@@ -111,4 +87,5 @@ df_transposed = df.T
 script_dir = os.path.dirname(os.path.abspath(__file__))
 file = os.path.join(script_dir, "data/" + "data.csv")
 df_transposed.to_csv(file, index=False, header=False, encoding="utf-8")
+
     
