@@ -31,7 +31,7 @@ file_json = "unique.json"
 file_json = os.path.join(script_dir, file_json)
 
 df = pd.read_csv(file_csv, sep=';', encoding='utf-8', index_col=False)
-columns_to_process = ["DD", "WW", "N", "W1", "W2", "Cl", "Nh", "H", "Cm", "Ch", "RRR", "E", "E\'"]
+columns_to_process = ["W1"]
 columns_to_process = [col.strip() for col in columns_to_process]
 
 update_json_with_column_values(file_json, columns_to_process, df)

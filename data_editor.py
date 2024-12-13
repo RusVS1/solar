@@ -51,11 +51,11 @@ def solar_add(file):
     merged_df = pd.merge(df, df2[['YEAR', 'MO', 'DY', 'HR', 'ALLSKY_SFC_SW_DWN']], on=['YEAR', 'MO', 'DY', 'HR'], how='left')
     merged_df.to_csv(file, index=False, sep=';')
 
-file = 'hourly_data.csv'
+file = 'weather.csv'
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 file = os.path.join(script_dir, file)
 #edit(file)
-#replace(file)
+replace(file)
 #rad_add(file)
-solar_add(file)
+#solar_add(file)
