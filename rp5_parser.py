@@ -69,7 +69,7 @@ def get_weather(date_begin, date_end):
     else:
         print(f'Произошла ошибка: {response.status_code}, сообщение: {response.text}')
 
-date_begin = "01.02.2023"
-date_end = "01.03.2023"
+date_begin = "30.06.2017"
+date_end = "30.06.2017"
 
 get_weather(date_begin, date_end)
