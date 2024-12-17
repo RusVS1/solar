@@ -138,14 +138,24 @@ json_file = os.path.join(json_dir, "weather.json")
 with open(json_file , 'r', encoding='utf-8') as f:
     replacement_rules = json.load(f)
 
+def normalize_text(text):
+    replacements = {
+        'C': 'С',
+        'c': 'с',
+    }
+    for latin, cyrillic in replacements.items():
+        text = text.replace(latin, cyrillic)
+    return text.strip()
+
 def replace_weather_condition(text, condition_dict):
+    text = normalize_text(text)
     for condition, value in condition_dict.items():
-        if re.search(condition, text, re.IGNORECASE):
+        if condition.lower() in text.lower():
             return value
     return text
 
-df['W1'] = df['W1'].apply(lambda x: replace_weather_condition(x, replacement_rules["W1"]))
-df['N'] = df['N'].apply(lambda x: replace_weather_condition(x, replacement_rules["N"]))
+df['W1'] = df['W1'].apply(lambda x: replace_weather_condition(str(x), replacement_rules["W1"]))
+df['N'] = df['N'].apply(lambda x: replace_weather_condition(str(x), replacement_rules["N"]))
 
 rad = "rad.csv"
 script_dir = os.path.dirname(os.path.abspath(__file__))

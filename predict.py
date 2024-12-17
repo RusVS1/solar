@@ -7,10 +7,11 @@ import json
 from datetime import datetime, timedelta
 import paramiko
 
-rf_model = joblib.load('rf_model.pkl')
+script_dir = os.path.dirname(os.path.abspath(__file__))
+rf_model = os.path.join(script_dir, 'rf_model.pkl')
+rf_model = joblib.load(rf_model)
 
 test = "data/data.csv"
-script_dir = os.path.dirname(os.path.abspath(__file__))
 test = os.path.join(script_dir, test)
 data_test = pd.read_csv(test, sep=',', encoding='utf-8', index_col=False)
 num_columns = ['N','W1','T','Po','Ff','U','sinα','Ho']
