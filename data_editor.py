@@ -43,19 +43,19 @@ def rad_add(file):
     merged_df.to_csv(file, index=False, sep=';')
 
 def solar_add(file):
-    solar = "solar.csv"
+    solar = "solar4.csv"
     script_dir = os.path.dirname(os.path.abspath(__file__))
     solar = os.path.join(script_dir, solar)
     df = pd.read_csv(file, sep=';', encoding='utf-8', index_col=False)
     df2 = pd.read_csv(solar, delimiter=';', encoding='utf-8', index_col=False)
-    merged_df = pd.merge(df, df2[['YEAR', 'MO', 'DY', 'HR', 'ALLSKY_SFC_SW_DWN']], on=['YEAR', 'MO', 'DY', 'HR'], how='left')
+    merged_df = pd.merge(df, df2[['YEAR', 'MO', 'DY', 'HR', 'ALLSKY_SFC_SW_DIFF', 'CLRSKY_SFC_SW_DWN', 'ALLSKY_SFC_SW_DNI', 'ALLSKY_SFC_SW_DWN']], on=['YEAR', 'MO', 'DY', 'HR'], how='left')
     merged_df.to_csv(file, index=False, sep=';')
 
-file = 'weather.csv'
+file = 'data/01.01.2009-30.07.2024.csv'
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 file = os.path.join(script_dir, file)
 #edit(file)
-replace(file)
+#replace(file)
 #rad_add(file)
-#solar_add(file)
+solar_add(file)
