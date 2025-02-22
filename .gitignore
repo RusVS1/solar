@@ -3,3 +3,4 @@ data.json
 data/data.csv
 dev/build/password.txt
 model__forestpoly.pkl
+dev/build/model.pkl
