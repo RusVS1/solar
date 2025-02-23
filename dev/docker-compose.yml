@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: 
+      context: ./build
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./build:/app
+    environment:
+      - TZ=Asia/Irkutsk
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    entrypoint: ["/bin/sh", "-c", "while true; do sleep $(( $(date -d '05 minutes' +%s) - $(date +%s) )); python /app/main.py || echo 'Ошибка, повтор через 30 секунд'; sleep 30; done"]
