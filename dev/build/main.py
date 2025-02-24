@@ -184,7 +184,6 @@ df2 = pd.read_csv(rad, delimiter=';', encoding='utf-8', index_col=False)
 df = pd.merge(df, df2[['MO', 'DY', 'HR', 'sinα', 'Ho']], on=['MO', 'DY', 'HR'], how='left')
 
 import joblib
-from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
 import numpy as np
 import os

@@ -25,13 +25,13 @@ def update_json_with_column_values(json_file, columns, df):
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-file_csv = '25.02.2009-03.06.2024.csv'
+file_csv = '01.01.2009-30.07.2024.csv'
 file_csv = os.path.join(script_dir, "data/" + file_csv)
 file_json = "unique.json"
 file_json = os.path.join(script_dir, file_json)
 
 df = pd.read_csv(file_csv, sep=';', encoding='utf-8', index_col=False)
-columns_to_process = ["W1"]
+columns_to_process = ["Nh"]
 columns_to_process = [col.strip() for col in columns_to_process]
 
 update_json_with_column_values(file_json, columns_to_process, df)

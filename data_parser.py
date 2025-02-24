@@ -60,27 +60,61 @@ data.append(month_data)
 data.append(day_data)"""
 data.append(hours)
 
+# cells = rows[2].find_elements(By.TAG_NAME, "td") or rows[2].find_elements(By.TAG_NAME, "th")
+# cloud_cover = []
+# clouds = []
+# for cell in cells:
+#     try:
+#         cc_0 = cell.find_element(By.CLASS_NAME, "cc_0")
+#         cc_0 = cc_0.get_attribute("innerHTML")
+#         teg_b = re.search(r"<b>(.*?)</b>", cc_0)
+#         if teg_b:
+#             cloud_cover.append(teg_b.group(1))
+#         else:
+#             cloud_cover.append('')
+#         teg_br = re.search(r"<br/>\((.*?)\)", cc_0)
+#         if teg_br:
+#             clouds.append(teg_br.group(1).strip('"'))
+#         else:
+#             clouds.append('')
+#     except:
+#         pass
+# data.append(cloud_cover[1:-1])
+#data.append(clouds[1:-1])
+
 cells = rows[2].find_elements(By.TAG_NAME, "td") or rows[2].find_elements(By.TAG_NAME, "th")
 cloud_cover = []
 clouds = []
+cloud_percentages = []
+
 for cell in cells:
     try:
-        cc_0 = cell.find_element(By.CLASS_NAME, "cc_0")
-        cc_0 = cc_0.get_attribute("innerHTML")
+        cc_0 = cell.find_element(By.CLASS_NAME, "cc_0").get_attribute("innerHTML")
+
         teg_b = re.search(r"<b>(.*?)</b>", cc_0)
-        if teg_b:
-            cloud_cover.append(teg_b.group(1))
-        else:
-            cloud_cover.append('')
+        cloud_cover.append(teg_b.group(1) if teg_b else '')
+
         teg_br = re.search(r"<br/>\((.*?)\)", cc_0)
-        if teg_br:
-            clouds.append(teg_br.group(1).strip('"'))
+        cloud_info = teg_br.group(1).strip('"') if teg_br else ''
+
+        lower = re.search(r"нижнего яруса (\d+)%", cloud_info)
+        middle = re.search(r"среднего яруса (\d+)%", cloud_info)
+
+        if lower:
+            cloud_percentages.append(int(lower.group(1)))
+        elif middle:
+            cloud_percentages.append(int(middle.group(1)))
         else:
-            clouds.append('')
+            cloud_percentages.append(0)
+
+        clouds.append(cloud_info)
+
     except:
         pass
+
 data.append(cloud_cover[1:-1])
-#data.append(clouds[1:-1])
+cloud_percentages[1:-1] = [x / 100 for x in cloud_percentages[1:-1]]
+data.append(cloud_percentages[1:-1])
 
 cells = rows[3].find_elements(By.TAG_NAME, "td") or rows[3].find_elements(By.TAG_NAME, "th")
 rainfall = []
@@ -113,23 +147,58 @@ for cell in hum_data:
         humidity.append(digit)
 data.append(humidity[1:-1])
 
-df = pd.DataFrame(data)
-df = df.T
-index_of_zero = df[df[0] == 0].index[0]
-df = df.iloc[index_of_zero:index_of_zero+24]
+# df = pd.DataFrame(data)
+# df = df.T
+# index_of_zero = df[df[0] == 0].index[0]
+# df = df.iloc[index_of_zero:index_of_zero+24]
 
-tomorrow = datetime.today() + timedelta(days=1)
+# tomorrow = datetime.today() + timedelta(days=1)
 
-tomorrow_year = tomorrow.year
-tomorrow_month = tomorrow.month
-tomorrow_day = tomorrow.day
-df['year'] = [tomorrow_year] * 24
-df['month'] = [tomorrow_month] * 24
-df['day'] = [tomorrow_day] * 24
+# tomorrow_year = tomorrow.year
+# tomorrow_month = tomorrow.month
+# tomorrow_day = tomorrow.day
+# df['year'] = [tomorrow_year] * 24
+# df['month'] = [tomorrow_month] * 24
+# df['day'] = [tomorrow_day] * 24
 
-df = df[['year', 'month', 'day'] + [col for col in df.columns if col not in ['year', 'month', 'day']]]
+# df = df[['year', 'month', 'day'] + [col for col in df.columns if col not in ['year', 'month', 'day']]]
 
-df.columns = ['YEAR','MO','DY','HR','N','W1','F','T','Tt','Po','Ff','FF','f','U']
+df = pd.DataFrame(data).T  
+
+first_zero_hour_index = df[df[0] == 0].index[0]
+
+current_date = datetime.today()
+
+if df.iloc[0, 0] == 0:
+    current_date += timedelta(days=1)
+
+years, months, days = [], [], []
+
+previous_hour = df.iloc[0, 0]
+track_hour_decrease = False
+
+for i in range(len(df)):
+    current_hour = df.iloc[i, 0]
+
+    if i == first_zero_hour_index:
+        track_hour_decrease = True
+
+    if track_hour_decrease and current_hour < previous_hour:
+        current_date += timedelta(days=1)
+
+    years.append(current_date.year)
+    months.append(current_date.month)
+    days.append(current_date.day)
+
+    previous_hour = current_hour
+
+df['YEAR'] = years
+df['MO'] = months
+df['DY'] = days
+
+df = df[['YEAR', 'MO', 'DY'] + [col for col in df.columns if col not in ['YEAR', 'MO', 'DY']]]
+
+df.columns = ['YEAR','MO','DY','HR','N','Nh','W1','F','T','Tt','Po','Ff','FF','f','U']
 columns = ['F','Tt','FF','f']
 df = df.drop(columns, axis=1)
 
@@ -161,8 +230,8 @@ rad = "rad.csv"
 script_dir = os.path.dirname(os.path.abspath(__file__))
 rad = os.path.join(script_dir, rad)
 df2 = pd.read_csv(rad, delimiter=';', encoding='utf-8', index_col=False)
-df2['sinα'] = df2['sinα'].str.replace(',', '.').astype(float)
-df2['Ho'] = df2['Ho'].str.replace(',', '.').astype(float)
+# df2['sinα'] = df2['sinα'].str.replace(',', '.').astype(float)
+# df2['Ho'] = df2['Ho'].str.replace(',', '.').astype(float)
 df = pd.merge(df, df2[['MO', 'DY', 'HR', 'sinα', 'Ho']], on=['MO', 'DY', 'HR'], how='left')
 
 file = os.path.join(script_dir, "data/" + "data.csv")
